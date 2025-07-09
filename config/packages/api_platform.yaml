@@ -1,0 +1,19 @@
+api_platform:
+    title: 'Project name'
+    description: 'Project description'
+    version: '0.0.1'
+
+    use_symfony_listeners: true
+
+    defaults:
+        pagination_items_per_page: 10
+        stateless: true
+        cache_headers:
+            vary: ['Content-Type', 'Authorization', 'Origin']
+
+    swagger:
+        versions: [3]
+        api_keys:
+            apiKey:
+                name: Authorization
+                type: header
