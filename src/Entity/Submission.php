@@ -55,6 +55,7 @@ class Submission implements CreatedAtSettableInterface
     private ?Survey $survey = null;
 
     #[ORM\Column]
+    #[Groups(['submission:read'])]
     private ?\DateTime $createdAt = null;
 
     #[ORM\ManyToOne]
