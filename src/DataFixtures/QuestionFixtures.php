@@ -10,7 +10,7 @@ class QuestionFixtures extends Fixture
 {
     private array $questions = [
         [
-            'uz' => 'Davlat xizmati sifati Sizni qanoatlantiradimi?',
+            'uz' => 'Davlat xizmati sifati sizni qanoatlantiradimi?',
             'ru' => 'Вас устраивает качество государственной услуги?'
         ],
         [

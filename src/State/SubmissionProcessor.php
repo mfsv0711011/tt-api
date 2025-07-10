@@ -26,11 +26,13 @@ readonly class SubmissionProcessor implements ProcessorInterface
         $negativeCount = 0;
 
         foreach ($data->getAnswers() as $answer) {
-            if ($answer->getAnswerOption()->getValue() === AnswerValue::YES) {
-                $positiveCount++;
-            } else {
-                $negativeCount++;
-            }
+            $value = $answer->getAnswerOption()->getValue();
+            $questionId = $answer->getQuestion()->getId();
+
+            $isNegative = ($questionId === 2 && $value === AnswerValue::YES) ||
+                ($questionId !== 2 && $value === AnswerValue::NO);
+
+            $isNegative ? $negativeCount++ : $positiveCount++;
         }
 
         $data->getOrganization()->setPositiveCount($data->getOrganization()->getPositiveCount() + $positiveCount);
