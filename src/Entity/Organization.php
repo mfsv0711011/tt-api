@@ -8,11 +8,15 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use App\Controller\DeleteAction;
 use App\Dto\OrganizationInput;
 use App\Dto\OrganizationOutput;
+use App\Entity\Interfaces\DeletedAtSettableInterface;
 use App\Repository\OrganizationRepository;
 use App\State\OrganizationProcessor;
 use App\State\OrganizationProvider;
+use DateTimeInterface;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -34,13 +38,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
             security: 'is_granted("ROLE_ADMIN")',
         ),
         new Delete(
-            security: 'is_granted("ROLE_ADMIN")',
+            controller: DeleteAction::class,
+            security: 'is_granted("ROLE_ADMIN")'
         ),
     ],
     normalizationContext: ['groups' => ['organization:read']],
     denormalizationContext: ['groups' => ['organization:write']]
 )]
-class Organization
+class Organization implements DeletedAtSettableInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -63,6 +68,10 @@ class Organization
     #[ORM\Column]
     #[Groups(['organization:read'])]
     private ?int $positiveCount = 0;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['organization:read'])]
+    private ?DateTimeInterface $deletedAt = null;
 
     public function getId(): ?int
     {
@@ -118,6 +127,18 @@ class Organization
     public function setPositiveCount(int $positiveCount): static
     {
         $this->positiveCount = $positiveCount;
+
+        return $this;
+    }
+
+    public function getDeletedAt(): ?DateTimeInterface
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?DateTimeInterface $deletedAt): static
+    {
+        $this->deletedAt = $deletedAt;
 
         return $this;
     }
