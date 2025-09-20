@@ -16,12 +16,12 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         [
             'email' => 'user@example.com',
             'password' => 'stronger',
-            'company' => 'USER_COMPANY',
+            'company' => 'NO_COMPANY',
         ],
         [
             'email' => 'admin@gmail.com',
             'password' => 'admin',
-            'company' => 'ADMIN_COMPANY',
+            'company' => 'NO_COMPANY',
         ]
     ];
 

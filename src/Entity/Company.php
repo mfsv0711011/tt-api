@@ -19,7 +19,7 @@ class Company
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'users:read'])]
     private ?string $name = null;
 
     public function getId(): ?int

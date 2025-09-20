@@ -43,7 +43,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(
             normalizationContext: ['groups' => ['users:read']],
-            security: "is_granted('ROLE_ADMIN')",
+            security: "is_granted('ROLE_OWNER')",
         ),
         new Get(
             security: "object == user || is_granted('ROLE_ADMIN')",
@@ -151,7 +151,7 @@ class User implements
     private ?string $password = null;
 
     #[ORM\Column(type: 'array')]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'users:read'])]
     private array $roles = [];
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -174,7 +174,7 @@ class User implements
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'users:read'])]
     private ?Company $company = null;
 
     public function getId(): ?int
