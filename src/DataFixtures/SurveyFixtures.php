@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Company;
 use App\Entity\Question;
 use App\Entity\Survey;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -13,6 +14,7 @@ class SurveyFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         $questions = $manager->getRepository(Question::class)->findAll();
+        $company = $this->getReference(CompanyFixtures::COMPANY, Company::class);
 
         $newSurvey = new Survey();
         $newSurvey->setTitle(['uz' => 'So\'rovnoma', 'ru' => 'Опрос']);
@@ -20,7 +22,6 @@ class SurveyFixtures extends Fixture implements DependentFixtureInterface
         /** @var Question $question */
         foreach ($questions as $question) {
             $newSurvey->addQuestion($question);
-
         }
 
         $manager->persist($newSurvey);
@@ -30,6 +31,6 @@ class SurveyFixtures extends Fixture implements DependentFixtureInterface
 
     public function getDependencies(): array
     {
-        return [QuestionFixtures::class];
+        return [CompanyFixtures::class, QuestionFixtures::class];
     }
 }

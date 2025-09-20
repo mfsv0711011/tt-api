@@ -8,11 +8,10 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Entity\Submission;
 use App\Enum\AnswerValue;
-use Doctrine\ORM\EntityManagerInterface;
 
 readonly class SubmissionProcessor implements ProcessorInterface
 {
-    public function __construct(private EntityManagerInterface $em)
+    public function __construct(private ProcessorInterface $processor)
     {
     }
 
@@ -37,10 +36,7 @@ readonly class SubmissionProcessor implements ProcessorInterface
 
         $data->getOrganization()->setPositiveCount($data->getOrganization()->getPositiveCount() + $positiveCount);
         $data->getOrganization()->setNegativeCount($data->getOrganization()->getNegativeCount() + $negativeCount);
-        $this->em->persist($data);
-        $this->em->persist($data->getOrganization());
-        $this->em->flush();
 
-        return $data;
+        return $this->processor->process($data, $operation, $uriVariables, $context);
     }
 }

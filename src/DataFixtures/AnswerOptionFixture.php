@@ -3,11 +3,13 @@
 namespace App\DataFixtures;
 
 use App\Entity\AnswerOption;
+use App\Entity\Company;
 use App\Enum\AnswerValue;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class AnswerOptionFixture extends Fixture
+class AnswerOptionFixture extends Fixture implements DependentFixtureInterface
 {
     private array $answerOptions = [
         [
@@ -28,6 +30,8 @@ class AnswerOptionFixture extends Fixture
 
     public function load(ObjectManager $manager): void
     {
+        $company = $this->getReference(CompanyFixtures::COMPANY, Company::class);
+
         foreach ($this->answerOptions as $answerOption) {
             $newAnswerOption = new AnswerOption();
             $newAnswerOption->setLabel($answerOption['label']);
@@ -37,5 +41,10 @@ class AnswerOptionFixture extends Fixture
         }
 
         $manager->flush();
+    }
+
+    public function getDependencies(): array
+    {
+        return [CompanyFixtures::class];
     }
 }

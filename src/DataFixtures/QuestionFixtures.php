@@ -2,11 +2,13 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Company;
 use App\Entity\Question;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class QuestionFixtures extends Fixture
+class QuestionFixtures extends Fixture implements DependentFixtureInterface
 {
     private array $questions = [
         [
@@ -25,6 +27,8 @@ class QuestionFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
+        $company = $this->getReference(CompanyFixtures::COMPANY, Company::class);
+
         foreach ($this->questions as $question) {
             $newQuestion = new Question();
             $newQuestion->setText($question);
@@ -33,5 +37,10 @@ class QuestionFixtures extends Fixture
         }
 
         $manager->flush();
+    }
+
+    public function getDependencies(): array
+    {
+        return [CompanyFixtures::class];
     }
 }

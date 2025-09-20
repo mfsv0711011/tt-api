@@ -10,6 +10,8 @@ use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use ApiPlatform\Metadata\Operation;
 use App\Controller\Base\AbstractController;
 use App\Entity\Interfaces\DeletedAtSettableInterface;
+use App\Entity\Organization;
+use App\Entity\Submission;
 use Doctrine\ORM\QueryBuilder;
 
 /**
@@ -65,13 +67,20 @@ class ReadExtension extends AbstractController implements QueryCollectionExtensi
         }
 
         switch ($resourceClass) {
-//            case Application::class:
-//                $this->joinEntityAndAddUser($queryBuilder, $rootTable, 'company');
-//                break;
+            case Submission::class:
+                $company = $this->getUser()->getCompany();
+
+                $queryBuilder
+                    ->join("$rootTable.organization", 'organization')
+                    ->andWhere(':company = organization.company')
+                    ->setParameter('company', $company)
+                    ->orderBy("$rootTable.id", 'DESC');
+                ;
+                break;
 //
-//            case Company::class:
-//                $this->addUser($queryBuilder, $rootTable);
-//                break;
+            case Organization::class:
+                $queryBuilder->orderBy("$rootTable.id", 'DESC');
+                break;
         }
     }
 

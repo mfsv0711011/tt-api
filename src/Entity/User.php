@@ -21,6 +21,7 @@ use App\Controller\UserAuthByRefreshTokenAction;
 use App\Controller\UserChangePasswordAction;
 use App\Controller\UserCreateAction;
 use App\Controller\UserIsUniqueEmailAction;
+use App\Dto\UserCreateDto;
 use App\Entity\Interfaces\CreatedAtSettableInterface;
 use App\Entity\Interfaces\DeletedAtSettableInterface;
 use App\Entity\Interfaces\DeletedBySettableInterface;
@@ -49,6 +50,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
         new Post(
             controller: UserCreateAction::class,
+            input: UserCreateDto::class,
+            validate: false
         ),
         new Patch(
             denormalizationContext: ['groups' => ['user:put:write']],
@@ -169,6 +172,11 @@ class User implements
     #[ORM\ManyToOne(targetEntity: self::class)]
     private ?self $deletedBy = null;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['user:read'])]
+    private ?Company $company = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -252,6 +260,18 @@ class User implements
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getCompany(): ?Company
+    {
+        return $this->company;
+    }
+
+    public function setCompany(Company $company): static
+    {
+        $this->company = $company;
 
         return $this;
     }

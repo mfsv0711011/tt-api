@@ -11,6 +11,12 @@ services:
     App\Filter\OrganizationFilter:
         tags: [ 'api_platform.filter' ]
 
+    App\State\:
+        resource: '../src/State/*'
+        tags: [ 'api_platform.state_provider', 'api_platform.state_processor' ]
+
+    ApiPlatform\State\ProcessorInterface: '@api_platform.doctrine.orm.state.persist_processor'
+
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.

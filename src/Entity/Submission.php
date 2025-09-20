@@ -22,19 +22,19 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
     operations: [
         new GetCollection(
-            security: 'is_granted("ROLE_ADMIN")',
+            security: 'is_granted("ROLE_ADMIN") or is_granted("ROLE_OWNER") or is_granted("ROLE_COMPANY")',
         ),
         new Post(
             processor: SubmissionProcessor::class,
         ),
         new Get(
-            security: 'is_granted("ROLE_ADMIN")',
+            security: 'is_granted("ROLE_ADMIN") or is_granted("ROLE_OWNER")',
         ),
         new Patch(
-            security: 'is_granted("ROLE_ADMIN")',
+            security: 'is_granted("ROLE_ADMIN") or is_granted("ROLE_OWNER")',
         ),
         new Delete(
-            security: 'is_granted("ROLE_ADMIN")',
+            security: 'is_granted("ROLE_ADMIN") or is_granted("ROLE_OWNER")',
         )
     ],
     normalizationContext: ['groups' => ['submission:read']],
@@ -58,7 +58,7 @@ class Submission implements CreatedAtSettableInterface
     #[Groups(['submission:read'])]
     private ?\DateTime $createdAt = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['submission:read', 'submission:write'])]
     private ?Organization $organization = null;

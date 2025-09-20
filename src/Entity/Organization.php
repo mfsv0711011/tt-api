@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Post;
 use App\Controller\DeleteAction;
 use App\Dto\OrganizationInput;
 use App\Dto\OrganizationOutput;
+use App\Entity\Interfaces\CompanySettableInterface;
 use App\Entity\Interfaces\DeletedAtSettableInterface;
 use App\Repository\OrganizationRepository;
 use App\State\OrganizationProcessor;
@@ -29,23 +30,23 @@ use Symfony\Component\Serializer\Annotation\Groups;
             provider: OrganizationProvider::class
         ),
         new Post(
-            security: 'is_granted("ROLE_ADMIN")',
+            security: 'is_granted("ROLE_ADMIN") or is_granted("ROLE_OWNER") or is_granted("ROLE_COMPANY")',
             input: OrganizationInput::class,
             processor: OrganizationProcessor::class
         ),
         new Get(),
         new Patch(
-            security: 'is_granted("ROLE_ADMIN")',
+            security: 'is_granted("ROLE_ADMIN") or is_granted("ROLE_OWNER") or is_granted("ROLE_COMPANY")',
         ),
         new Delete(
             controller: DeleteAction::class,
-            security: 'is_granted("ROLE_ADMIN")'
+            security: 'is_granted("ROLE_ADMIN") or is_granted("ROLE_OWNER") or is_granted("ROLE_COMPANY")'
         ),
     ],
     normalizationContext: ['groups' => ['organization:read']],
     denormalizationContext: ['groups' => ['organization:write']]
 )]
-class Organization implements DeletedAtSettableInterface
+class Organization implements DeletedAtSettableInterface, CompanySettableInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -72,6 +73,11 @@ class Organization implements DeletedAtSettableInterface
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     #[Groups(['organization:read'])]
     private ?DateTimeInterface $deletedAt = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['organization:read', 'submission:read'])]
+    private ?Company $company = null;
 
     public function getId(): ?int
     {
@@ -139,6 +145,18 @@ class Organization implements DeletedAtSettableInterface
     public function setDeletedAt(?DateTimeInterface $deletedAt): static
     {
         $this->deletedAt = $deletedAt;
+
+        return $this;
+    }
+
+    public function getCompany(): ?Company
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?Company $company): static
+    {
+        $this->company = $company;
 
         return $this;
     }
